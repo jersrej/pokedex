@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import PokemonStyle from '../assets/css/Pokemon.module.css';
 import cx from 'classnames';
 import { Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import helpers from '../libs/helpers';
+import pokeLoader from '../assets/gif/poke-loading.gif';
+import test from '../assets/cries/1.ogg';
 
 function Pokedex() {
     const [loading, setLoading] = useState(false);
@@ -50,22 +52,23 @@ function Pokedex() {
 
             let flavorText = respPokeSpecies.flavor_text_entries[flavorTextEntry].flavor_text;
 
-            setLoading(false);
-            setPokemonData({
-                'id': id,
-                'name': name,
-                'order': order,
-                'types': types,
-                'stats': stats,
-                'height': height,
-                'weight': weight,
-                'sprites': {
-                    'front': front_default,
-                    'back': back_default
-                },
-                'flavorText': flavorText
-            });
-
+            setTimeout(() => {
+                setLoading(false);
+                setPokemonData({
+                    'id': id,
+                    'name': name,
+                    'order': order,
+                    'types': types,
+                    'stats': stats,
+                    'height': height,
+                    'weight': weight,
+                    'sprites': {
+                        'front': front_default,
+                        'back': back_default
+                    },
+                    'flavorText': flavorText
+                });
+            }, 1500);
         }))
     }
 
@@ -78,7 +81,7 @@ function Pokedex() {
                 <div className={PokemonStyle.pokeDexContainer}>
                     <Row>
                         <Col md={6} lg={6}>
-                            <div className={PokemonStyle.pokemonContainer}>
+                            <div className={cx("cust-scroll", PokemonStyle.pokemonContainer)}>
                                 <Row>
                                     {
                                         pokemon !== null &&
@@ -89,7 +92,7 @@ function Pokedex() {
                                                     key={"pokemon-" + index}
                                                     xs={6}
                                                     sm={6}
-                                                    md={4}
+                                                    md={6}
                                                     lg={4}
                                                 >
                                                     <div className={PokemonStyle.pokemonWrap}>
@@ -98,6 +101,7 @@ function Pokedex() {
                                                                 getPokemonData(index + 1);
                                                             }}
                                                         >
+                                                            <div className={PokemonStyle.noId}>{index + 1}</div>
                                                             {helpers.fetchSprite(index + 1)}
                                                             <div className="text-capitalize text-black">
                                                                 {name}
@@ -119,11 +123,19 @@ function Pokedex() {
                                         <div className={cx(PokemonStyle.border, PokemonStyle.imageWrap)}>
                                             <div className={PokemonStyle.imageInnerWrap}>
                                                 {
-                                                    loading ? 'loading'
+                                                    loading ?
+                                                        (
+                                                            <div>
+                                                                <img src={pokeLoader} alt={pokeLoader} />
+                                                            </div>
+                                                        )
                                                         : (
                                                             pokemonData !== null &&
                                                             // console.log(pokemonData)
-                                                            <img src={pokemonData.sprites.front} alt="pokemon" />
+                                                            <>
+                                                                <img src={pokemonData.sprites.front} alt="pokemon" />
+                                                                <audio controls autoPlay={true} src={require(`../assets/cries/${pokemonData.id}.ogg`)} style={{ display: 'none' }} />
+                                                            </>
                                                         )
                                                 }
                                             </div>
@@ -137,8 +149,11 @@ function Pokedex() {
                                             {/*== name, order, flavor text ==*/}
                                             <div>
                                                 {
-                                                    loading ? 'loading'
-                                                        : (
+                                                    loading ? (
+                                                        <div className="text-center">
+                                                            <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 160 }} />
+                                                        </div>
+                                                    ) : (
                                                             pokemonData !== null &&
                                                             <>
                                                                 {/*== name, no. ==*/}

@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import { lazy } from '@loadable/component'
 import ReactDOM from 'react-dom';
 import './index.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 // import App from './App';
-import Pokedex from './components/Pokedex';
+// import Pokedex from './components/Pokedex';
+// import pokeHome from './assets/gif/poke-home.gif'
 import * as serviceWorker from './serviceWorker';
+
+const PokeComponent = lazy(() => import('./components/Pokedex'))
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Pokedex />
+		<Suspense fallback={<div>Loading</div>}>
+			<PokeComponent />
+		</Suspense>
 	</React.StrictMode>,
 	document.getElementById('root')
 );
