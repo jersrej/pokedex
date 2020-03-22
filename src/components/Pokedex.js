@@ -11,8 +11,6 @@ function Pokedex() {
     const [pokemon, setPokemon] = useState(null);
     const [pokemonData, setPokemonData] = useState(null);
 
-    console.log('test ulit')
-
     useEffect(() => {
         const getPokemon = async () => {
             const getAllPokemon = helpers.fetchPokemon('pokemon/?offset=0&limit=151');
@@ -40,16 +38,7 @@ function Pokedex() {
                 return i.language.name === 'en' && i.version.name === 'firered';
             });
 
-            const {
-                id,
-                name,
-                order,
-                types,
-                stats,
-                height,
-                weight,
-                sprites: { back_default, front_default }
-            } = respPokeData
+            const { id, name, order, types, stats, height, weight, sprites: { back_default, front_default } } = respPokeData
 
             let flavorText = respPokeSpecies.flavor_text_entries[flavorTextEntry].flavor_text;
 
@@ -73,15 +62,12 @@ function Pokedex() {
         }))
     }
 
-    // const memoizedJOKER = useMemo(() =>
-    //     pokemonData, [pokemonData]);
-
     return (
         <section className={PokedexStyle.secContainer}>
             <Container>
                 <div className={PokedexStyle.pokeDexContainer}>
                     <Row>
-                        <Col md={6} lg={6}>
+                        <Col md={{ span: 6, order: 1 }} lg={{ span: 6, order: 1 }} xs={{ order: 12 }}>
                             <div className={cx("cust-scroll", PokedexStyle.pokemonContainer)}>
                                 <Row>
                                     {
@@ -114,30 +100,53 @@ function Pokedex() {
                                 </Row>
                             </div>
                         </Col>
-                        <Col md={6} lg={6}>
+                        <Col md={{ span: 6, order: 12 }} lg={{ span: 6, order: 12 }} xs={{ order: 1 }}>
                             <div className={PokedexStyle.pokemonView}>
                                 <Row>
                                     {/*== image ==*/}
                                     <Col md={12} lg={12}>
                                         <div className={cx(PokedexStyle.border, PokedexStyle.imageWrap)}>
-                                            <div className={PokedexStyle.imageInnerWrap}>
-                                                {
-                                                    loading ?
-                                                        (
-                                                            <div>
-                                                                <img src={pokeLoader} alt={pokeLoader} />
-                                                            </div>
-                                                        )
-                                                        : (
-                                                            pokemonData !== null &&
-                                                            // console.log(pokemonData)
-                                                            <>
-                                                                <img src={pokemonData.sprites.front} alt="pokemon" />
-                                                                <audio controls autoPlay={true} src={require(`../assets/cries/${pokemonData.id}.ogg`)} style={{ display: 'none' }} />
-                                                            </>
-                                                        )
-                                                }
-                                            </div>
+                                            <Row>
+                                                <Col xs={10} sm={10} md={10} lg={10}>
+                                                    <div className={PokedexStyle.imageInnerWrap}>
+                                                        {
+                                                            loading ?
+                                                                (
+                                                                    <div>
+                                                                        <img src={pokeLoader} alt={pokeLoader} />
+                                                                    </div>
+                                                                )
+                                                                : (
+                                                                    pokemonData !== null &&
+                                                                    // console.log(pokemonData)
+                                                                    <>
+                                                                        <img src={pokemonData.sprites.front} alt="pokemon" />
+                                                                        <audio controls autoPlay={true} src={require(`../assets/cries/${pokemonData.id}.ogg`)} style={{ display: 'none' }} />
+                                                                    </>
+                                                                )
+                                                        }
+                                                    </div>
+                                                </Col>
+                                                <Col xs={2} sm={2} md={2} lg={2}>
+                                                    <div className={PokedexStyle.assets}>
+                                                        {/*== round light ==*/}
+                                                        <div className={PokedexStyle.roundLight} />
+                                                        {/*== round light ==*/}
+
+                                                        {/*== speakers==*/}
+                                                        <div className={PokedexStyle.speakersWrap}>
+                                                            <div className={PokedexStyle.speakers} />
+                                                            <div className={PokedexStyle.speakers} />
+                                                            <div className={PokedexStyle.speakers} />
+                                                            <div className={PokedexStyle.speakers} />
+                                                            <div className={PokedexStyle.speakers} />
+                                                        </div>
+                                                        {/*== speakers==*/}
+
+                                                    </div>
+
+                                                </Col>
+                                            </Row>
                                         </div>
                                     </Col>
                                     {/*== image ==*/}
@@ -152,7 +161,7 @@ function Pokedex() {
                                                         {
                                                             loading ? (
                                                                 <div className="text-center">
-                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 120, marginTop: 15 }} />
+                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 150, marginTop: 15 }} />
                                                                 </div>
                                                             ) : (
                                                                     pokemonData !== null &&
@@ -207,22 +216,25 @@ function Pokedex() {
                                                         {
                                                             loading ? (
                                                                 <div className="text-center">
-                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 120, marginTop: 15 }} />
+                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 150, marginTop: 15 }} />
                                                                 </div>
                                                             ) : (
                                                                     pokemonData !== null &&
                                                                     <>
                                                                         {
                                                                             Object.values(pokemonData.stats).map((item, index) => {
+                                                                                let baseStat = (item.base_stat / 200) * 100;
                                                                                 return (
                                                                                     <div
                                                                                         key={"stats-" + index}
-                                                                                        className="flex-middle"
+                                                                                        className="flex-middle text-capitalize mt-2 mb-2"
                                                                                     >
-                                                                                        <div className="w-25">{item.stat.name}</div>
-                                                                                        <div className="w-75">
+                                                                                        <div className="w-50">{item.stat.name}</div>
+                                                                                        <div className="w-50">
                                                                                             <div className={PokedexStyle.statsWrap}>
-                                                                                                <div className={PokedexStyle.stats} style={{ width: item.base_stat }} ></div>
+                                                                                                <div className={cx(PokedexStyle.stats, item.stat.name)} style={{ width: `${baseStat}%` }} >
+                                                                                                    {baseStat.toFixed(0)}%
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

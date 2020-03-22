@@ -91,22 +91,29 @@ body {
 	background: #6890F0;
 }
 
-/*
-::-webkit-scrollbar {
-	width: 10px;
+.hp {
+	background: #fe0000;
 }
 
-::-webkit-scrollbar-track {
-	background: #f1f1f1;
+.attack {
+	background: #ee7f30;
 }
 
-::-webkit-scrollbar-thumb {
-	background: #888;
+.defense {
+	background: #f7cf2f;
 }
 
-::-webkit-scrollbar-thumb:hover {
-	background: #555;
-} */
+.special-attack {
+	background: #678fee;
+}
+
+.special-defense {
+	background: #77c850;
+}
+
+.speed {
+	background: #f85687;
+}
 
 .cust-scroll::-webkit-scrollbar-track {
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
