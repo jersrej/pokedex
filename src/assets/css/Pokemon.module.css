@@ -1,0 +1,77 @@
+.pokeDexContainer {
+    background: #FE0065;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, 0.5);
+}
+
+.pokemonContainer {
+    max-height: 89vh;
+    overflow-y: auto;
+    padding: 25px;
+    background: #b3dae6;
+    border-radius: 15px;
+}
+
+.pokemonWrap {
+    height: 100px;
+    width: 100px;
+    background: #ffffff;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 2px 1px 10px -4px rgba(0, 0, 0, .5);
+}
+
+.pokemonWrap button {
+    border: none;
+    background: none;
+    padding: 0;
+    width: 100%;
+}
+
+.pokemonWrap img {
+    max-width: 75%;
+}
+
+.pokemonView .border {
+    border: 40px solid #e6e6e6;
+    box-shadow: 0 1px 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.pokemonView .imageWrap {
+    text-align: center;
+    min-height: 400px;
+    width: 100%;
+    background: #e6e6e6;
+    border-radius: 10px;
+}
+
+
+.pokemonView .imageInnerWrap {
+    padding: 10px;
+    border: 4px solid #6f6f6f;
+    border-radius: 20px;
+    background: #ffffff;
+    min-height: 330px;
+}
+
+.imageWrap img {
+    width: 100%;
+    max-width: 300px;
+}
+
+.detailsWrap {
+    padding: 20px;
+    background: #464242;
+    border-radius: 5px;
+    color: #ffffff;
+    margin-top: 35px;
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.detailsWrap .name {
+    text-transform: capitalize;
+}
