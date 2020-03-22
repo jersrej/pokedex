@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import PokemonStyle from '../assets/css/Pokemon.module.css';
+import PokedexStyle from '../assets/css/Pokedex.module.css';
 import cx from 'classnames';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import axios from 'axios';
 import helpers from '../libs/helpers';
 import pokeLoader from '../assets/gif/poke-loading.gif';
-import test from '../assets/cries/1.ogg';
 
 function Pokedex() {
     const [loading, setLoading] = useState(false);
@@ -14,7 +13,7 @@ function Pokedex() {
 
     useEffect(() => {
         const getPokemon = async () => {
-            const getAllPokemon = helpers.fetchPokemon('pokemon/?offset=0&limit=150');
+            const getAllPokemon = helpers.fetchPokemon('pokemon/?offset=0&limit=151');
 
             await getAllPokemon.then(function (resp) {
                 setPokemon(resp.data.results)
@@ -76,12 +75,12 @@ function Pokedex() {
     //     pokemonData, [pokemonData]);
 
     return (
-        <section className={PokemonStyle.secContainer}>
+        <section className={PokedexStyle.secContainer}>
             <Container>
-                <div className={PokemonStyle.pokeDexContainer}>
+                <div className={PokedexStyle.pokeDexContainer}>
                     <Row>
                         <Col md={6} lg={6}>
-                            <div className={cx("cust-scroll", PokemonStyle.pokemonContainer)}>
+                            <div className={cx("cust-scroll", PokedexStyle.pokemonContainer)}>
                                 <Row>
                                     {
                                         pokemon !== null &&
@@ -95,17 +94,15 @@ function Pokedex() {
                                                     md={6}
                                                     lg={4}
                                                 >
-                                                    <div className={PokemonStyle.pokemonWrap}>
+                                                    <div className={PokedexStyle.pokemonWrap}>
                                                         <button
                                                             onClick={(e) => {
                                                                 getPokemonData(index + 1);
                                                             }}
                                                         >
-                                                            <div className={PokemonStyle.noId}>{index + 1}</div>
-                                                            {helpers.fetchSprite(index + 1)}
-                                                            <div className="text-capitalize text-black">
-                                                                {name}
-                                                            </div>
+                                                            <div className={PokedexStyle.noId}>{index + 1}</div>
+                                                            <div>{helpers.fetchSprite(index + 1)}</div>
+                                                            <div className="text-capitalize text-black">{name}</div>
                                                         </button>
                                                     </div>
                                                 </Col>
@@ -116,12 +113,12 @@ function Pokedex() {
                             </div>
                         </Col>
                         <Col md={6} lg={6}>
-                            <div className={PokemonStyle.pokemonView}>
+                            <div className={PokedexStyle.pokemonView}>
                                 <Row>
                                     {/*== image ==*/}
                                     <Col md={12} lg={12}>
-                                        <div className={cx(PokemonStyle.border, PokemonStyle.imageWrap)}>
-                                            <div className={PokemonStyle.imageInnerWrap}>
+                                        <div className={cx(PokedexStyle.border, PokedexStyle.imageWrap)}>
+                                            <div className={PokedexStyle.imageInnerWrap}>
                                                 {
                                                     loading ?
                                                         (
@@ -145,62 +142,96 @@ function Pokedex() {
 
                                     {/*== details ==*/}
                                     <Col md={12} lg={12}>
-                                        <div className={PokemonStyle.detailsWrap}>
+                                        <div className={cx("cust-scroll", PokedexStyle.detailsWrap)}>
                                             {/*== name, order, flavor text ==*/}
                                             <div>
-                                                {
-                                                    loading ? (
-                                                        <div className="text-center">
-                                                            <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 160 }} />
-                                                        </div>
-                                                    ) : (
-                                                            pokemonData !== null &&
-                                                            <>
-                                                                {/*== name, no. ==*/}
-                                                                <div className="flex-middle mt-1 mb-1">
-                                                                    <div className="mr-1 text-capitalize">
-                                                                        <span className="mr-2 d-inline-block">
-                                                                            {pokemonData.name}
-                                                                        </span>
-                                                                        <span>
-                                                                            #{pokemonData.id}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="ml-1 flex-middle">
+                                                <Tabs defaultActiveKey="details">
+                                                    <Tab eventKey="details" title="Details">
+                                                        {
+                                                            loading ? (
+                                                                <div className="text-center">
+                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 120, marginTop: 15 }} />
+                                                                </div>
+                                                            ) : (
+                                                                    pokemonData !== null &&
+                                                                    <>
+                                                                        {/*== name, no. ==*/}
+                                                                        <div className="flex-middle mt-2 mb-2">
+                                                                            <div className={cx("mr-1 text-capitalize", PokedexStyle.nameDet)}>
+                                                                                <span className="mr-2 d-inline-block">
+                                                                                    {pokemonData.name}
+                                                                                </span>
+                                                                                <span>
+                                                                                    #{pokemonData.id}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div className="ml-1 flex-middle">
+                                                                                {
+                                                                                    Object.values(pokemonData.types).map((item, index) => {
+                                                                                        return (
+                                                                                            <div
+                                                                                                key={"types-" + index}
+                                                                                                className={cx("type", item.type.name)}
+                                                                                            >
+                                                                                                {item.type.name}
+                                                                                            </div>
+                                                                                        )
+                                                                                    })
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {/*== height, width==*/}
+                                                                        <div className="mt-2 mb-2 flex-middle">
+                                                                            <div className="flex-middle mr-1">
+                                                                                <span className="mr-1">Height:</span>
+                                                                                <span>{pokemonData.height}m</span>
+                                                                            </div>
+                                                                            <div className="flex-middle ml-1">
+                                                                                <span className="mr-1">Weight:</span>
+                                                                                <span>{pokemonData.weight}kg</span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {/*== flavor text ==*/}
+                                                                        <div className="mt-2 mb-2">
+                                                                            {pokemonData.flavorText}
+                                                                        </div>
+                                                                    </>
+                                                                )
+                                                        }
+                                                    </Tab>
+                                                    <Tab eventKey="stats" title="Stats">
+                                                        {
+                                                            loading ? (
+                                                                <div className="text-center">
+                                                                    <img src={pokeLoader} alt={pokeLoader} style={{ maxWidth: 120, marginTop: 15 }} />
+                                                                </div>
+                                                            ) : (
+                                                                    pokemonData !== null &&
+                                                                    <>
                                                                         {
-                                                                            Object.values(pokemonData.types).map((item, index) => {
+                                                                            Object.values(pokemonData.stats).map((item, index) => {
                                                                                 return (
                                                                                     <div
-                                                                                        key={"types-" + index}
-                                                                                        className={cx("type", item.type.name)}
+                                                                                        key={"stats-" + index}
+                                                                                        className="flex-middle"
                                                                                     >
-                                                                                        {item.type.name}
+                                                                                        <div className="w-25">{item.stat.name}</div>
+                                                                                        <div className="w-75">
+                                                                                            <div className={PokedexStyle.statsWrap}>
+                                                                                                <div className={PokedexStyle.stats} style={{ width: item.base_stat }} ></div>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
                                                                                 )
                                                                             })
                                                                         }
-                                                                    </div>
-                                                                </div>
-
-                                                                {/*== height, width==*/}
-                                                                <div className="mt-1 mb-1 flex-middle">
-                                                                    <div className="flex-middle mr-1">
-                                                                        <span className="mr-1">Height:</span>
-                                                                        <span>{pokemonData.height}m</span>
-                                                                    </div>
-                                                                    <div className="flex-middle ml-1">
-                                                                        <span className="mr-1">Weight:</span>
-                                                                        <span>{pokemonData.weight}kg</span>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/*== flavor text ==*/}
-                                                                <div className="mt-1 mb-1">
-                                                                    {pokemonData.flavorText}
-                                                                </div>
-                                                            </>
-                                                        )
-                                                }
+                                                                    </>
+                                                                )
+                                                        }
+                                                    </Tab>
+                                                </Tabs>
                                             </div>
                                         </div>
                                     </Col>

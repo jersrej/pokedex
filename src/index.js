@@ -11,11 +11,9 @@ import * as serviceWorker from './serviceWorker';
 const PokeComponent = lazy(() => import('./components/Pokedex'))
 
 ReactDOM.render(
-	<React.StrictMode>
-		<Suspense fallback={<div>Loading</div>}>
-			<PokeComponent />
-		</Suspense>
-	</React.StrictMode>,
+	<Suspense fallback={<div>Loading</div>}>
+		<PokeComponent />
+	</Suspense>,
 	document.getElementById('root')
 );
 
