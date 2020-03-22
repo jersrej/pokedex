@@ -11,7 +11,7 @@ function Pokedex() {
     const [pokemon, setPokemon] = useState(null);
     const [pokemonData, setPokemonData] = useState(null);
 
-    console.log('test')
+    console.log('test ulit')
 
     useEffect(() => {
         const getPokemon = async () => {
