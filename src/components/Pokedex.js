@@ -11,6 +11,8 @@ function Pokedex() {
     const [pokemon, setPokemon] = useState(null);
     const [pokemonData, setPokemonData] = useState(null);
 
+    // test
+
     useEffect(() => {
         const getPokemon = async () => {
             const getAllPokemon = helpers.fetchPokemon('pokemon/?offset=0&limit=151');
