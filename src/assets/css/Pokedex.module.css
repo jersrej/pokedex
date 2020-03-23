@@ -8,9 +8,8 @@
 }
 
 .pokemonContainer {
-    /* max-height: 89vh; */
-    max-height: 645px;
-    overflow-y: auto;
+    height: 645px;
+    overflow-y: scroll;
     padding: 25px;
     background: #b3dae6;
     border-radius: 10px;
@@ -130,20 +129,22 @@
 .roundLight {
     height: 25px;
     width: 25px;
-    background-color: #c00d0d;
     margin: 25px auto;
     border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -o-border-radius: 30px;
-    box-shadow: -2px 1px #5e0000;
-    -webkit-box-shadow: -2px 1px #5e0000;
-    -moz-box-shadow: -2px 1px #5e0000;
-    -o-box-shadow: -2px 1px #5e0000;
-    /* background: linear-gradient(top, #c00d0d 0%, #8b0000 80%); */
-    background: -webkit-linear-gradient(top, #c00d0d 0%, #8b0000 80%);
-    background: -moz-linear-gradient(top, #c00d0d 0%, #8b0000 80%);
-    background: -o-linear-gradient(top, #c00d0d 0%, #8b0000 80%);
+    animation: blink 0.7s infinite;
+}
+
+
+@keyframes blink {
+    from {
+        background-color: #c00d0d;
+        box-shadow: -2px 1px #5e0000;
+    }
+
+    to {
+        background-color: #008000;
+        box-shadow: -2px 1px #025002;
+    }
 }
 
 .speakersWrap {
@@ -169,7 +170,7 @@
 /*== tablet ==*/
 @media (max-width: 991px) {
     .pokemonContainer {
-        max-height: 549px;
+        height: 549px;
     }
 
     .pokemonView .imageWrap {
