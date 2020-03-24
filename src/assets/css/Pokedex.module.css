@@ -1,165 +1,165 @@
 .pokeDexContainer {
-    background: #c00d0d;
-    padding: 1rem;
-    border-radius: 10px;
-    margin: 1.5rem 0;
-    box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, 0.5);
-    width: 100%;
+	background: #c00d0d;
+	padding: 1rem;
+	border-radius: 10px;
+	margin: 1.5rem 0;
+	box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, 0.5);
+	width: 100%;
 }
 
 .pokemonContainer {
-    height: 645px;
-    overflow-y: scroll;
-    padding: 25px;
-    background: #b3dae6;
-    border-radius: 10px;
-    box-shadow: inset 0px 0px 5px 1px #000;
+	height: 645px;
+	overflow-y: scroll;
+	padding: 25px;
+	background: #b3dae6;
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 5px 1px #000;
 }
 
 .pokemonWrap {
-    height: 100px;
-    width: 100px;
-    background: #ffffff;
-    margin: 10px auto;
-    border-radius: 10px;
-    position: relative;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    font-size: 9px;
+	height: 100px;
+	width: 100px;
+	background: #ffffff;
+	margin: 10px auto;
+	border-radius: 10px;
+	position: relative;
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	font-size: 9px;
 }
 
 .pokemonWrap:hover {
-    box-shadow: 2px 1px 10px -4px rgba(0, 0, 0, .5);
+	box-shadow: 2px 1px 10px -4px rgba(0, 0, 0, .5);
 }
 
 .pokemonWrap button {
-    padding: 0;
-    width: 100%;
+	padding: 0;
+	width: 100%;
 }
 
 .pokemonWrap .noId {
-    position: absolute;
-    left: 10px;
-    top: 5px;
-    font-size: 8px;
+	position: absolute;
+	left: 10px;
+	top: 5px;
+	font-size: 8px;
 }
 
 .pokemonWrap img {
-    max-width: 75%;
+	max-width: 75%;
 }
 
 .pokemonView .border {
-    border: 40px solid #b0b0b0;
-    /* box-shadow: 0 1px 0 2px rgba(0, 0, 0, 0.3); */
+	border: 40px solid #b0b0b0;
+	/* box-shadow: 0 1px 0 2px rgba(0, 0, 0, 0.3); */
 }
 
 .pokemonView .imageWrap {
-    text-align: center;
-    min-height: 338px;
-    width: 100%;
-    background: #b0b0b0;
-    border-radius: 10px;
+	text-align: center;
+	min-height: 338px;
+	width: 100%;
+	background: #b0b0b0;
+	border-radius: 10px;
 }
 
 .pokemonView .imageWrap:after {
-    content: "";
-    border-top: 75px solid #b0b0b0;
-    border-right: 75px solid #c00d0d;
-    height: 0;
-    position: absolute;
-    bottom: 0;
-    right: 15px;
+	content: "";
+	border-top: 75px solid #b0b0b0;
+	border-right: 75px solid #c00d0d;
+	height: 0;
+	position: absolute;
+	bottom: 0;
+	right: 15px;
 }
 
 .pokemonView .imageInnerWrap {
-    padding: 10px;
-    border: 4px solid #6f6f6f;
-    border-radius: 20px;
-    background: #ffffff;
-    min-height: 258px;
+	padding: 10px;
+	border: 4px solid #6f6f6f;
+	border-radius: 20px;
+	background: #ffffff;
+	min-height: 258px;
 }
 
 .imageWrap img {
-    width: 100%;
-    max-width: 230px;
+	width: 100%;
+	max-width: 230px;
 }
 
 .detailsWrap {
-    padding: 12px 20px;
-    background: #464242;
-    border-radius: 5px;
-    color: #ffffff;
-    margin-top: 15px;
-    height: 243px;
-    overflow-y: auto;
-    box-shadow: 0 0 20px #003300 inset;
-    font-size: 12px;
+	padding: 12px 20px;
+	background: #464242;
+	border-radius: 5px;
+	color: #ffffff;
+	margin-top: 15px;
+	height: 243px;
+	overflow-y: auto;
+	box-shadow: 0 0 20px #003300 inset;
+	font-size: 12px;
 }
 
 .detailsWrap :global(.tab-pane) {
-    padding: 10px;
+	padding: 10px;
 }
 
 .detailsWrap :global(.nav-link) {
-    color: #ffffff;
+	color: #ffffff;
 }
 
 .detailsWrap .nameDet {
-    font-size: 18px;
-    font-weight: normal;
+	font-size: 18px;
+	font-weight: normal;
 }
 
 .detailsWrap .name {
-    text-transform: capitalize;
+	text-transform: capitalize;
 }
 
 .statsWrap {
-    width: 100%;
-    background-color: #ddd;
-    border-radius: 10px;
-    border: 1px solid;
+	width: 100%;
+	background-color: #ddd;
+	border-radius: 10px;
+	border: 1px solid;
 }
 
 .statsWrap .stats {
-    text-align: right;
-    color: #000000;
-    font-size: 12px;
-    border-radius: inherit;
+	text-align: right;
+	color: #000000;
+	font-size: 12px;
+	border-radius: inherit;
 }
 
 .roundLight {
-    height: 25px;
-    width: 25px;
-    margin: 25px auto;
-    border-radius: 30px;
-    animation: blink 0.7s infinite;
+	height: 25px;
+	width: 25px;
+	margin: 25px auto;
+	border-radius: 30px;
+	animation: blink 0.7s infinite;
 }
 
 
 @keyframes blink {
-    from {
-        background-color: #c00d0d;
-        box-shadow: -2px 1px #5e0000;
-    }
+	from {
+		background-color: #c00d0d;
+		box-shadow: -2px 1px #5e0000;
+	}
 
-    to {
-        background-color: #008000;
-        box-shadow: -2px 1px #025002;
-    }
+	to {
+		background-color: #008000;
+		box-shadow: -2px 1px #025002;
+	}
 }
 
 .speakersWrap {
-    transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
 .speakersWrap .speakers {
-    height: 3px;
-    width: 50px;
-    margin-bottom: 5px;
-    background-color: #494949;
-    border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -o-border-radius: 30px;
+	height: 3px;
+	width: 50px;
+	margin-bottom: 5px;
+	background-color: #494949;
+	border-radius: 30px;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	-o-border-radius: 30px;
 }
 
 /*== ==*/
@@ -169,48 +169,48 @@
 
 /*== tablet ==*/
 @media (max-width: 991px) {
-    .pokemonContainer {
-        height: 549px;
-    }
+	.pokemonContainer {
+		height: 549px;
+	}
 
-    .pokemonView .imageWrap {
-        min-height: 278px;
-        min-width: 298px;
-    }
+	.pokemonView .imageWrap {
+		min-height: 278px;
+		min-width: 298px;
+	}
 
-    .pokemonView .imageInnerWrap {
-        min-height: 198px;
-    }
+	.pokemonView .imageInnerWrap {
+		min-height: 198px;
+	}
 
-    .imageWrap img {
-        max-width: 170px;
-    }
+	.imageWrap img {
+		max-width: 170px;
+	}
 
-    .detailsWrap {
-        height: 207px;
-        font-size: 9px;
-    }
+	.detailsWrap {
+		height: 207px;
+		font-size: 9px;
+	}
 
-    .detailsWrap .nameDet {
-        font-size: 15px;
-    }
+	.detailsWrap .nameDet {
+		font-size: 15px;
+	}
 
-    .statsWrap .stats {
-        font-size: 9px;
-    }
+	.statsWrap .stats {
+		font-size: 9px;
+	}
 }
 
 /*== mobile ==*/
 @media (max-width: 767px) {
-    .pokemonView {
-        margin-bottom: 2rem;
-    }
+	.pokemonView {
+		margin-bottom: 2rem;
+	}
 }
 
 
 /*== small screen mobiles  ==*/
 @media (max-width: 480px) {
-    .pokemonView {
-        margin-bottom: 2rem;
-    }
+	.pokemonView {
+		margin-bottom: 2rem;
+	}
 }
