@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import { lazy } from '@loadable/component'
 import ReactDOM from 'react-dom';
-import './index.css';
 import "bootstrap/dist/css/bootstrap.min.css";
+import './index.css';
 // import App from './App';
 // import Pokedex from './components/Pokedex';
 // import pokeHome from './assets/gif/poke-home.gif'

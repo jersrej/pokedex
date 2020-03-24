@@ -1,8 +1,13 @@
+/* @import url('https://fonts.googleapis.com/css?family=VT323&display=swap&subset=latin-ext,vietnamese'); */
+
+@font-face {
+	font-family: "Pokemon GB";
+	src: url('./assets/fonts/PokemonGb-RAeo.ttf');
+}
+
 body {
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-		sans-serif;
+	font-family: 'Pokemon GB';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -12,10 +17,24 @@ body {
 	align-items: center;
 }
 
+.inline-middle {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+button {
+	border: none;
+	background: none;
+}
+
+button:focus {
+	outline: none;
+}
+
 .type {
 	padding: 5px;
 	margin-right: 5px;
-	width: 70px;
+	width: auto;
 	text-align: center;
 }
 
@@ -116,7 +135,7 @@ body {
 }
 
 .cust-scroll::-webkit-scrollbar-track {
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	border-radius: 10px;
 	background-color: #F5F5F5;
 }
@@ -128,6 +147,25 @@ body {
 
 .cust-scroll::-webkit-scrollbar-thumb {
 	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 	background-color: #555;
+}
+
+.fnt-10 {
+	font-size: 10px;
+}
+
+.btn-select-style {
+	height: 12px;
+	width: 65px;
+	border-radius: 100px;
+	background-color: #222;
+	box-shadow: -1px 2px #010101;
+	font-size: 10px;
+	padding: 2px;
+	text-align: center;
+}
+
+.btn-select-style:active {
+	box-shadow: none;
 }

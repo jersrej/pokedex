@@ -24,6 +24,7 @@
     border-radius: 10px;
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.3);
+    font-size: 9px;
 }
 
 .pokemonWrap:hover {
@@ -31,17 +32,15 @@
 }
 
 .pokemonWrap button {
-    border: none;
-    background: none;
     padding: 0;
     width: 100%;
 }
 
 .pokemonWrap .noId {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 5px;
-    font-size: 12px;
+    font-size: 8px;
 }
 
 .pokemonWrap img {
@@ -90,9 +89,10 @@
     border-radius: 5px;
     color: #ffffff;
     margin-top: 15px;
-    height: 292px;
+    height: 243px;
     overflow-y: auto;
     box-shadow: 0 0 20px #003300 inset;
+    font-size: 12px;
 }
 
 .detailsWrap :global(.tab-pane) {
@@ -104,8 +104,8 @@
 }
 
 .detailsWrap .nameDet {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: normal;
 }
 
 .detailsWrap .name {
@@ -187,7 +187,16 @@
     }
 
     .detailsWrap {
-        height: 256px;
+        height: 207px;
+        font-size: 9px;
+    }
+
+    .detailsWrap .nameDet {
+        font-size: 15px;
+    }
+
+    .statsWrap .stats {
+        font-size: 9px;
     }
 }
 
