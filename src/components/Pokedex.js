@@ -68,7 +68,7 @@ const Pokedex = () => {
             },
             flavorText
           });
-        }, 2000);
+        }, 1500);
       })
     );
   };
