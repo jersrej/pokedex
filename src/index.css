@@ -1,171 +1,445 @@
-/* @import url('https://fonts.googleapis.com/css?family=VT323&display=swap&subset=latin-ext,vietnamese'); */
+@import 'tailwindcss';
 
-@font-face {
-	font-family: "Pokemon GB";
-	src: url('./assets/fonts/PokemonGb-RAeo.ttf');
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/*                                                                     */
+/* Two materials: red moulded plastic, and a four-shade olive LCD.     */
+/* Everything on a screen is drawn in the LCD shades only.             */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --fold-duration: 650ms;
+
+  /* Hardware */
+  --pokedex-body: #b4323a;
+  --pokedex-body-light: #cd5a5f;
+  --pokedex-body-dark: #7e1f28;
+  --pokedex-body-ink: #f4edd4;
+  --pokedex-bezel: #30362f;
+
+  /* LCD, lightest to darkest */
+  --pokedex-screen: #b9c9a0;
+  --pokedex-highlight: #a4b789;
+  --pokedex-border: #6c8260;
+  --pokedex-muted: #364a33;
+  --pokedex-accent: #20432a;
+  --pokedex-screen-dark: #22362a;
+  --pokedex-ink: #15241a;
+
+  /* The LCD above is "Classic". The other display modes re-ink the same
+     seven roles; nothing else about the device changes. */
+
+  /* The desk the device sits on; follows the OS colour scheme. */
+  --pokedex-page: #ddd8c6;
 }
 
-body {
-	margin: 0;
-	font-family: 'Pokemon GB';
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pokedex-page: #171a15;
+  }
 }
 
-.flex-middle {
-	display: flex;
-	align-items: center;
+/* Mono: a neutral black-and-white panel. The four-grey sprites, multiplied
+   onto it, come out as true greys. */
+[data-display='mono'] {
+  --pokedex-screen: #dadada;
+  --pokedex-highlight: #c2c2c2;
+  --pokedex-border: #808080;
+  --pokedex-muted: #474747;
+  --pokedex-accent: #333333;
+  --pokedex-screen-dark: #2c2c2c;
+  --pokedex-ink: #151515;
 }
 
-.inline-middle {
-	display: inline-block;
-	vertical-align: middle;
+/* Color: a warm paper-white panel, as a colour handheld of the era had,
+   so the Super Game Boy sprite palettes read true. The UI stays one ink. */
+[data-display='color'] {
+  --pokedex-screen: #efe9d6;
+  --pokedex-highlight: #ddd4b8;
+  --pokedex-border: #968c72;
+  --pokedex-muted: #534e3d;
+  --pokedex-accent: #34313a;
+  --pokedex-screen-dark: #2b2930;
+  --pokedex-ink: #19181d;
 }
 
-button {
-	border: none;
-	background: none;
+@theme inline {
+  --color-page: var(--pokedex-page);
+  --color-body: var(--pokedex-body);
+  --color-body-light: var(--pokedex-body-light);
+  --color-body-dark: var(--pokedex-body-dark);
+  --color-body-ink: var(--pokedex-body-ink);
+  --color-bezel: var(--pokedex-bezel);
+  --color-screen: var(--pokedex-screen);
+  --color-screen-dark: var(--pokedex-screen-dark);
+  --color-highlight: var(--pokedex-highlight);
+  --color-line: var(--pokedex-border);
+  --color-muted: var(--pokedex-muted);
+  --color-accent: var(--pokedex-accent);
+  --color-ink: var(--pokedex-ink);
 }
 
-button:focus {
-	outline: none;
+@theme {
+  /* Names, numbers, labels and buttons. Wide and blocky: keep it short. */
+  --font-display: 'Press Start 2P', ui-monospace, monospace;
+  /* Running text on the LCD: pixel-drawn but comfortable to read. */
+  --font-sans: 'Pixelify Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Display sizes that keep the 8px pixel font legible. */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.6;
+
+  --color-lens: #4a8fa1;
+  --color-led-red: #dc5a52;
+  --color-led-amber: #e0b84c;
+  --color-led-green: #62a86b;
+
+  /* A hinge: eases off the stop, settles without overshoot. */
+  --ease-fold: cubic-bezier(0.45, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Old hardware moves in steps, not curves. */
+  --animate-scan: scan 600ms steps(12) both;
+  --animate-fill: fill 400ms steps(8) both;
+  --animate-enter: enter 200ms steps(3) both;
+  --animate-progress: progress 800ms steps(8) infinite;
+  --animate-blink: blink 900ms steps(2, jump-none) infinite;
+
+  @keyframes scan {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    99% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(var(--scan-distance, 10rem));
+      opacity: 0;
+    }
+  }
+  @keyframes fill {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes progress {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.35;
+    }
+  }
 }
 
-.type {
-	padding: 5px;
-	margin-right: 5px;
-	width: auto;
-	text-align: center;
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    background-color: var(--pokedex-page);
+  }
+  body {
+    @apply bg-page text-ink font-sans;
+    overflow-x: clip;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 2px solid var(--pokedex-ink);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-.bug {
-	background: #A8B820
+/* ------------------------------------------------------------------ */
+/* Device: layout + fold mechanics                                     */
+/*                                                                     */
+/* These live here rather than in utility classes because the fold is  */
+/* one coordinated state machine driven by data attributes:            */
+/*   data-open       true | false   is the device unfolded             */
+/*   data-animating  true | false   are fold transitions enabled       */
+/*   data-view       list | detail  which screen a handheld shows      */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  .stage {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    overflow: clip;
+  }
+
+  .device {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    perspective: 1600px;
+  }
+
+  .device-half,
+  .device-face {
+    position: absolute;
+    inset: 0;
+  }
+
+  .device-face {
+    backface-visibility: hidden;
+  }
+
+  /* Handheld (< md): one body. The two halves are two screens that slide,
+     and the cover is a lid hinged on the left edge. */
+  @media (width < 48rem) {
+    .device {
+      /* clip, not hidden: nothing may scroll the off-screen half into view. */
+      overflow: clip;
+    }
+    .device-half {
+      transition:
+        transform 280ms var(--ease-out),
+        visibility 0s linear 0s;
+    }
+    .device[data-view='list'] .device-half-right {
+      transform: translateX(100%);
+      visibility: hidden;
+      transition-delay: 0s, 280ms;
+    }
+    .device[data-view='detail'] .device-half-left {
+      transform: translateX(-20%);
+      visibility: hidden;
+      transition-delay: 0s, 280ms;
+    }
+
+    .device-lid {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      transform-origin: left center;
+      backface-visibility: hidden;
+    }
+    .device[data-open='true'] .device-lid {
+      transform: rotateY(-90deg);
+      visibility: hidden;
+    }
+    .device[data-animating='true'] .device-lid {
+      transition:
+        transform var(--fold-duration) var(--ease-fold),
+        visibility 0s linear 0s;
+    }
+    .device[data-animating='true'][data-open='true'] .device-lid {
+      transition-delay: 0s, var(--fold-duration);
+    }
+  }
+
+  /* Folding device (>= md): two equal halves around a centre hinge. The
+     right half is a two-sided slab: screen on the inside, cover on the
+     outside. Closed, it lies rotated 180deg over the left half. */
+  @media (width >= 48rem) {
+    .stage {
+      padding: 1.5rem;
+    }
+    .device {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* minmax(0, …): the row is the device's height, never its content's. */
+      grid-template-rows: minmax(0, 1fr);
+      max-width: 80rem;
+      height: min(100dvh - 3rem, 54rem);
+      perspective: 2400px;
+    }
+    .device-half {
+      position: relative;
+      inset: auto;
+      min-width: 0;
+      min-height: 0;
+    }
+    /* Closed, only the left column is occupied: shift it to the centre. */
+    .device[data-open='false'] {
+      transform: translateX(25%);
+    }
+    .device-half-right {
+      z-index: 2;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+    }
+    .device[data-open='false'] .device-half-right {
+      transform: rotateY(-180deg);
+    }
+    .device-face-back {
+      transform: rotateY(180deg);
+    }
+    .device[data-animating='true'],
+    .device[data-animating='true'] .device-half-right {
+      transition: transform var(--fold-duration) var(--ease-fold);
+    }
+
+    /* The cover casts a shadow on the left screen while it is over it. */
+    .device-half-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .device[data-open='false'] .device-half-left::after {
+      opacity: 0.45;
+    }
+    .device[data-animating='true'] .device-half-left::after {
+      transition: opacity var(--fold-duration) linear;
+    }
+
+    .device-lid {
+      display: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* LCD                                                               */
+  /* ---------------------------------------------------------------- */
+
+  /* The panel: a dot-matrix grid, light falling from the top left, and
+     the shadow of the bezel around the edge. All of it sits above the
+     content and ignores the pointer. Deliberately faint. */
+  .lcd {
+    position: relative;
+    background-color: var(--pokedex-screen);
+  }
+  .lcd::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgb(21 36 26 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(21 36 26 / 0.05) 1px, transparent 1px),
+      radial-gradient(120% 80% at 25% 0%, rgb(255 255 255 / 0.12), transparent 60%);
+    background-size:
+      3px 3px,
+      3px 3px,
+      100% 100%;
+    box-shadow:
+      inset 0 2px 5px rgb(21 36 26 / 0.35),
+      inset 0 0 28px rgb(21 36 26 / 0.14);
+  }
+
+  /* Display-mode change: one band travels down the panel as it redraws,
+     in a few coarse steps, then is gone. No flash, no flicker. */
+  .lcd-refresh {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    background-image: linear-gradient(
+      transparent,
+      color-mix(in srgb, var(--pokedex-ink) 16%, transparent) 40%,
+      color-mix(in srgb, var(--pokedex-ink) 16%, transparent) 60%,
+      transparent
+    );
+    background-size: 100% 35%;
+    background-repeat: no-repeat;
+    animation: lcd-refresh 260ms steps(7) both;
+  }
+  @keyframes lcd-refresh {
+    from {
+      opacity: 1;
+      background-position: 0 -55%;
+    }
+    99% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      background-position: 0 155%;
+    }
+  }
+
+  /* On-screen control: a hard-edged key that presses into its shadow. */
+  .lcd-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+    border: 2px solid var(--pokedex-ink);
+    background-color: var(--pokedex-screen);
+    color: var(--pokedex-ink);
+    font-family: var(--font-display);
+    font-size: var(--text-2xs);
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 2px 2px 0 var(--pokedex-ink);
+  }
+  .lcd-key:hover {
+    background-color: var(--pokedex-highlight);
+  }
+  .lcd-key:active,
+  .lcd-key[aria-pressed='true'] {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  /* "On" is drawn inverted, like a selected menu item. */
+  .lcd-key[aria-pressed='true'] {
+    background-color: var(--pokedex-screen-dark);
+    color: var(--pokedex-screen);
+  }
+  .lcd-key[aria-pressed='true']:focus-visible {
+    outline-offset: 3px;
+  }
 }
 
-.dark {
-	background: #705848
+/* Sprites are four greys; multiplying them onto the panel turns them
+   into the LCD's own shades. */
+@utility sprite {
+  image-rendering: pixelated;
+  mix-blend-mode: multiply;
 }
 
-.dragon {
-	background: #7038F8
+@utility scrollbar-slim {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pokedex-border) transparent;
 }
 
-.electric {
-	background: #F8D030
-}
-
-.fairy {
-	background: #EE99AC
-}
-
-.fighting {
-	background: #C03028
-}
-
-.fire {
-	background: #F08030
-}
-
-.flying {
-	background: #A890F0
-}
-
-.ghost {
-	background: #705898
-}
-
-.grass {
-	background: #78C850
-}
-
-.ground {
-	background: #E0C068
-}
-
-.ice {
-	background: #98D8D8
-}
-
-.normal {
-	background: #A8A878
-}
-
-.poison {
-	background: #A040A0
-}
-
-.psychic {
-	background: #F85888
-}
-
-.rock {
-	background: #B8A038
-}
-
-.steel {
-	background: #B8B8D0;
-}
-
-.water {
-	background: #6890F0;
-}
-
-.hp {
-	background: #fe0000;
-}
-
-.attack {
-	background: #ee7f30;
-}
-
-.defense {
-	background: #f7cf2f;
-}
-
-.special-attack {
-	background: #678fee;
-}
-
-.special-defense {
-	background: #77c850;
-}
-
-.speed {
-	background: #f85687;
-}
-
-.cust-scroll::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	border-radius: 10px;
-	background-color: #F5F5F5;
-}
-
-.cust-scroll::-webkit-scrollbar {
-	width: 12px;
-	background-color: none;
-}
-
-.cust-scroll::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-	background-color: #555;
-}
-
-.fnt-10 {
-	font-size: 10px;
-}
-
-.btn-select-style {
-	height: 12px;
-	width: 65px;
-	border-radius: 100px;
-	background-color: #222;
-	box-shadow: -1px 2px #010101;
-	font-size: 10px;
-	padding: 2px;
-	text-align: center;
-}
-
-.btn-select-style:active {
-	box-shadow: none;
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

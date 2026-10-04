@@ -1,68 +1,70 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Pokédex
 
-## Available Scripts
+The original Pokédex, rebuilt for the modern web: a folding device with a
+searchable index of the first 151 Pokémon on one LCD and the selected entry on
+the other. Data comes from [PokéAPI](https://pokeapi.co).
 
-In the project directory, you can run:
+It is deliberately Generation I throughout — Kanto #001–#151 only, Red/Blue
+sprites, the fifteen original types, the single Special stat, Red-version
+Pokédex text and the original cries. The range is enforced in the data layer
+(`src/features/pokemon/dex.ts`), not filtered in the UI.
 
-### `yarn start`
+## Requirements
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Node 24 (see `.nvmrc` — run `nvm use`).
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Scripts
 
-### `yarn test`
+| Command           | What it does                              |
+| ----------------- | ----------------------------------------- |
+| `npm run dev`     | Start the Vite dev server                 |
+| `npm run build`   | Type-check, then build to `dist/`         |
+| `npm run preview` | Serve the production build locally        |
+| `npm test`        | Run the test suite once (Vitest)          |
+| `npm run lint`    | ESLint                                    |
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+There are no environment variables. The API base URL lives in
+`src/features/pokemon/api/client.ts`.
 
-### `yarn build`
+## Stack
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Vite · React 19 · TypeScript · Tailwind CSS 4 · TanStack Query 5 · Vitest
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+src/
+  components/          shared UI (icon button, screen messages)
+  lib/                 query client, storage, media-query helpers
+  features/
+    pokemon/           the data: API functions, types, queries, and the
+      api/             components that display Pokémon (list, entry, types,
+      hooks/           stats, cry, favourites)
+      components/
+    pokedex/           the device: shell, cover, fold state, theme, LEDs
+      hooks/
+      components/
+```
 
-### `yarn eject`
+Colours are defined once as `--pokedex-*` tokens at the top of
+`src/index.css`. The keys under the left screen switch the display between
+Classic (olive LCD), Mono (greyscale) and Color (Red/Blue sprites in their
+Super Game Boy palettes); a mode only re-inks the LCD tokens and picks the
+sprite set (`src/lib/displayMode.ts`), and is remembered in localStorage. Interface sound effects (`src/lib/sfx.ts`) are synthesised,
+off by default, and switched on from the speaker button on the device.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Data flows one way: PokéAPI → `api/` functions (which trim responses to typed
+domain objects) → query options and hooks in `queries.ts` → components.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Keyboard
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+| Key       | Action                              |
+| --------- | ----------------------------------- |
+| `/`       | Focus search                        |
+| `↓` / `↑` | Move through the list               |
+| `Enter`   | Open the first search result        |
+| `←` / `→` | Previous / next (wraps 001 ↔ 151)   |
+| `Esc`     | Clear search, or return to the list |
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Pokémon and Pokémon character names are trademarks of Nintendo. This is an
+unofficial fan project.
