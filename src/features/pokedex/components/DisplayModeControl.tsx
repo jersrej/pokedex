@@ -13,15 +13,15 @@ interface DisplayModeControlProps {
 }
 
 /**
- * Three keys moulded into the shell under the screen. The active one is
- * filled and pressed in, with a lit indicator — never colour alone.
+ * Three keys raised from the shell under the screen. The active one is
+ * filled and held down, with a lit indicator — never colour alone.
  */
 export function DisplayModeControl({ mode, onChange }: DisplayModeControlProps) {
   return (
     <div role="group" aria-labelledby="display-mode-label" className="flex items-center gap-2">
       <span
         id="display-mode-label"
-        className="font-display text-2xs text-body-ink uppercase opacity-80 max-sm:sr-only"
+        className="font-display text-2xs text-body-ink uppercase opacity-80 max-sm:sr-only md:max-lg:sr-only"
       >
         Display
       </span>
@@ -35,10 +35,8 @@ export function DisplayModeControl({ mode, onChange }: DisplayModeControlProps) 
             aria-label={LABELS[option].full}
             onClick={() => onChange(option)}
             className={cn(
-              'flex h-11 flex-1 items-center justify-center gap-2 border-2 border-body-ink px-2 font-display text-2xs leading-none uppercase focus-visible:outline-body-ink',
-              active
-                ? 'translate-0.5 bg-body-ink text-body-dark'
-                : 'text-body-ink shadow-[2px_2px_0_var(--pokedex-body-dark)] hover:bg-body-dark/60',
+              'hw-key flex h-11 flex-1 items-center justify-center gap-2 rounded-md px-2 font-display text-2xs leading-none uppercase',
+              active && 'hw-key-lit',
             )}
           >
             <span

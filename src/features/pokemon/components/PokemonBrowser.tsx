@@ -2,10 +2,12 @@ import { SearchX, Star, TriangleAlert } from 'lucide-react';
 import {
   useDeferredValue,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
   type KeyboardEvent,
+  type Ref,
 } from 'react';
 import { RetryButton, ScreenMessage } from '../../../components/ScreenMessage';
 import { useFavorites } from '../hooks/useFavorites';
@@ -20,13 +22,19 @@ import { SearchBar } from './SearchBar';
 /** Rows rendered at first and added each time the end of the list scrolls into view. */
 const PAGE_SIZE = 60;
 
+export interface PokemonBrowserHandle {
+  /** Move the selection up (-1) or down (1) the list as currently filtered. */
+  step: (delta: -1 | 1) => void;
+}
+
 interface PokemonBrowserProps {
+  ref?: Ref<PokemonBrowserHandle>;
   selectedId: number | null;
-  onSelect: (id: number) => void;
+  onSelect: (id: number, options?: { replace?: boolean }) => void;
 }
 
 /** Search, filters and the scrolling index — the left screen of the device. */
-export function PokemonBrowser({ selectedId, onSelect }: PokemonBrowserProps) {
+export function PokemonBrowser({ ref, selectedId, onSelect }: PokemonBrowserProps) {
   const [query, setQuery] = useState('');
   const [type, setType] = useState<PokemonTypeName | null>(null);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
@@ -49,6 +57,19 @@ export function PokemonBrowser({ selectedId, onSelect }: PokemonBrowserProps) {
     }
     return searchPokemon(entries, deferredQuery);
   }, [index.data, favoritesOnly, favorites, type, typeMembers.data, deferredQuery]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      step(delta) {
+        const at = results.findIndex((entry) => entry.id === selectedId);
+        // Nothing selected (or it is filtered out): start from the top.
+        const next = results[at === -1 ? 0 : at + delta];
+        if (next) onSelect(next.id, { replace: selectedId !== null });
+      },
+    }),
+    [results, selectedId, onSelect],
+  );
 
   // "/" jumps to search from anywhere, like most searchable apps.
   useEffect(() => {

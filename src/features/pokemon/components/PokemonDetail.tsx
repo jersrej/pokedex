@@ -9,8 +9,6 @@ import { DEX, isInDex, nextInDex, previousInDex } from '../dex';
 import { formatDexNumber, formatHeight, formatWeight } from '../format';
 import { usePokemon, usePokemonIndex, usePrefetchPokemon, useSpecies } from '../queries';
 import type { Pokemon } from '../types';
-import { CryButton } from './CryButton';
-import { FavoriteButton } from './FavoriteButton';
 import { StatBars } from './StatBars';
 import { TypeBadge } from './TypeBadge';
 
@@ -69,7 +67,7 @@ export default function PokemonDetail({ id, onSelect, onClose }: PokemonDetailPr
       </ScreenMessage>
     );
   } else {
-    // Keyed so the sprite, scan line, stat blocks and cry state restart per Pokémon.
+    // Keyed so the sprite, scan line and stat blocks restart per Pokémon.
     body = <Entry key={pokemon.data.id} pokemon={pokemon.data} />;
   }
 
@@ -172,11 +170,6 @@ function Entry({ pokemon }: { pokemon: Pokemon }) {
           </li>
         ))}
       </ul>
-
-      <div className="flex flex-wrap gap-3">
-        <CryButton url={pokemon.cryUrl} pokemonName={name} />
-        <FavoriteButton id={pokemon.id} pokemonName={name} />
-      </div>
 
       <Section title="Dex entry">
         {species.isPending ? (

@@ -1,21 +1,36 @@
 import { playSfx } from '../../../lib/sfx';
 import { useFavorites } from '../hooks/useFavorites';
 
-/** `☆ Register` / `★ Registered` — keeps a Pokémon in the favourites list. */
-export function FavoriteButton({ id, pokemonName }: { id: number; pokemonName: string }) {
+interface FavoriteButtonProps {
+  /** `null` while there is no entry on screen to register. */
+  id: number | null;
+  pokemonName: string | null;
+}
+
+/** The device's Register key: `☆ Register` / `★ Registered`, held down while registered. */
+export function FavoriteButton({ id, pokemonName }: FavoriteButtonProps) {
   const { favorites, toggle } = useFavorites();
-  const favorite = favorites.has(id);
+  const available = id !== null && pokemonName !== null;
+  const favorite = id !== null && favorites.has(id);
 
   return (
     <button
       type="button"
+      disabled={!available}
       aria-pressed={favorite}
-      aria-label={favorite ? `Remove ${pokemonName} from favourites` : `Add ${pokemonName} to favourites`}
+      aria-label={
+        available
+          ? favorite
+            ? `Remove ${pokemonName} from favourites`
+            : `Add ${pokemonName} to favourites`
+          : 'Register'
+      }
       onClick={() => {
+        if (id === null) return;
         playSfx('confirm');
         toggle(id);
       }}
-      className="lcd-key"
+      className="action-key"
     >
       {favorite ? '★ Registered' : '☆ Register'}
     </button>

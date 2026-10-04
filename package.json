@@ -10,6 +10,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "cd dist && rm -rf .git && git init -b gh-pages && git add -A && git commit -m \"Deploy\" && git push -f https://github.com/jersrej/pokedex.git gh-pages && rm -rf .git",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

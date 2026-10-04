@@ -7,10 +7,22 @@ import { storage } from './storage';
  * so nothing can sound before a deliberate gesture. Pokémon cries are
  * separate (see useCry) and are not affected by this switch.
  */
-export type SfxName = 'open' | 'close' | 'select' | 'move' | 'back' | 'confirm' | 'display';
+export type SfxName =
+  | 'boot'
+  | 'open'
+  | 'close'
+  | 'select'
+  | 'move'
+  | 'back'
+  | 'confirm'
+  | 'display';
 
 /** Each note: [frequency in Hz, start offset in ms, length in ms]. */
 const PATTERNS: Record<SfxName, ReadonlyArray<readonly [number, number, number]>> = {
+  boot: [
+    [440, 0, 80],
+    [880, 140, 110],
+  ],
   open: [
     [523, 0, 60],
     [784, 60, 90],
@@ -50,11 +62,19 @@ export function setSfxEnabled(enabled: boolean) {
   listeners.forEach((listener) => listener());
 }
 
-export function playSfx(name: SfxName) {
+/**
+ * `unprompted` marks a sound no gesture asked for (the boot chime). If the
+ * browser is still holding audio back it is dropped, rather than queued to
+ * blurt out at the next press.
+ */
+export function playSfx(name: SfxName, { unprompted = false } = {}) {
   if (!isEnabled() || typeof AudioContext === 'undefined') return;
   context ??= new AudioContext();
   // Browsers suspend a context made before a gesture; a later one resumes it.
-  if (context.state === 'suspended') void context.resume();
+  if (context.state === 'suspended') {
+    if (unprompted) return;
+    void context.resume();
+  }
 
   for (const [frequency, start, length] of PATTERNS[name]) {
     const oscillator = context.createOscillator();

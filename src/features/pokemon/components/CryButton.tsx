@@ -1,18 +1,18 @@
 import { canPlayCries, useCry } from '../hooks/useCry';
 
 interface CryButtonProps {
+  /** `null` while nothing is selected, or when the Pokémon has no cry. */
   url: string | null;
-  pokemonName: string;
+  pokemonName: string | null;
 }
 
 /**
- * Plays the Pokémon's cry on request. Never autoplays, downloads nothing
- * until pressed, and renders nothing at all when there is no cry to play.
+ * The device's Cry key. Never autoplays and downloads nothing until
+ * pressed. With no cry to play it stays on the device, but dead.
  */
 export function CryButton({ url, pokemonName }: CryButtonProps) {
   const { status, toggle } = useCry(url);
-
-  if (!url || !canPlayCries()) return null;
+  const available = url !== null && pokemonName !== null && canPlayCries();
 
   const active = status === 'loading' || status === 'playing';
   const text = {
@@ -26,9 +26,12 @@ export function CryButton({ url, pokemonName }: CryButtonProps) {
     <button
       type="button"
       onClick={toggle}
+      disabled={!available}
       aria-pressed={active}
-      aria-label={active ? `Stop ${pokemonName}'s cry` : `Play ${pokemonName}'s cry`}
-      className="lcd-key"
+      aria-label={
+        available ? (active ? `Stop ${pokemonName}'s cry` : `Play ${pokemonName}'s cry`) : 'Cry'
+      }
+      className="action-key"
     >
       {text}
       <span role="status" className="sr-only">

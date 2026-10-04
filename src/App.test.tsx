@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
@@ -67,10 +67,12 @@ class FakeAudioContext {
   createGain = () => ({ gain: { setValueAtTime: () => {} }, connect: (node: unknown) => node });
 }
 
-/** Renders the app as a returning visitor: device already open. */
+/** Renders the app with the power-on sequence skipped: device already open. */
 function renderOpen() {
   window.localStorage.setItem('pokedex:intro-seen', '1');
-  return render(<App />);
+  const view = render(<App />);
+  fireEvent.click(document.body);
+  return view;
 }
 
 const list = () => screen.findByRole('list', { name: 'Pokémon' });
@@ -313,36 +315,122 @@ describe('cry', () => {
     expect(screen.getByRole('button', { name: "Play Bulbasaur's cry" })).toBeInTheDocument();
   });
 
-  it('shows no player for a Pokémon without a cry', async () => {
+  it('leaves the Cry key dead for a Pokémon without a cry', async () => {
     handler = (path) => (path === 'pokemon/1' ? pokemonResponse(1, false) : defaultHandler(path));
     window.location.hash = '#/pokemon/1';
     renderOpen();
 
     await screen.findByRole('heading', { name: 'Bulbasaur' });
-    expect(screen.queryByRole('button', { name: /cry/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cry' })).toBeDisabled();
+    // The other action key still works for this entry.
+    expect(screen.getByRole('button', { name: 'Add Bulbasaur to favourites' })).toBeEnabled();
+  });
+
+  it('keeps both action keys on the device, dead until an entry is on screen', async () => {
+    renderOpen();
+    await list();
+    const actions = within(screen.getByRole('group', { name: 'Entry actions' }));
+    expect(actions.getByRole('button', { name: 'Cry' })).toBeDisabled();
+    expect(actions.getByRole('button', { name: 'Register' })).toBeDisabled();
+
+    await userEvent.click(within(await list()).getByRole('button', { name: /Bulbasaur/ }));
+    expect(await actions.findByRole('button', { name: "Play Bulbasaur's cry" })).toBeEnabled();
+    expect(actions.getByRole('button', { name: 'Add Bulbasaur to favourites' })).toBeEnabled();
   });
 });
 
 describe('device', () => {
-  it('starts closed on a first visit and opens from the cover', async () => {
+  const index = () => screen.getByRole('region', { name: 'Pokémon index' });
+  const cover = () => screen.getAllByRole('button', { name: 'Open Pokédex' })[0]!;
+
+  it('boots closed on a first visit, reports the real entry count, then opens itself', async () => {
     render(<App />);
-    const index = screen.getByRole('region', { name: 'Pokémon index' });
-    expect(index).toHaveAttribute('inert');
+    expect(index()).toHaveAttribute('inert');
+    expect(screen.getByText('Pokédex starting up')).toHaveAttribute('role', 'status');
 
-    const [cover] = screen.getAllByRole('button', { name: 'Open Pokédex' });
-    await userEvent.click(cover!);
+    expect(await within(cover()).findByText('Initializing...')).toBeInTheDocument();
+    expect(await within(cover()).findByText('5 entries found')).toBeInTheDocument();
 
-    expect(index).not.toHaveAttribute('inert');
+    await waitFor(() => expect(index()).not.toHaveAttribute('inert'), { timeout: 3000 });
     expect(window.localStorage.getItem('pokedex:intro-seen')).toBe('1');
   });
 
-  it('starts open for a returning visitor and can be closed again', async () => {
+  it('keeps booting until the index request settles, and says so when it fails', async () => {
+    handler = () => new Response('', { status: 503 });
+    render(<App />);
+
+    // The request is retried once (~1s) before failing; the boot waits on it.
+    expect(
+      await within(cover()).findByText('No data link', {}, { timeout: 4000 }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(index()).not.toHaveAttribute('inert'), { timeout: 3000 });
+  });
+
+  it('skips the boot on a click or a key press', async () => {
+    render(<App />);
+    await userEvent.click(cover());
+    expect(index()).not.toHaveAttribute('inert');
+    expect(window.localStorage.getItem('pokedex:intro-seen')).toBe('1');
+    cleanup();
+
+    render(<App />);
+    expect(index()).toHaveAttribute('inert');
+    await userEvent.keyboard('{Escape}');
+    expect(index()).not.toHaveAttribute('inert');
+  });
+
+  it('gives a returning visitor a short boot without the database steps', async () => {
+    window.localStorage.setItem('pokedex:intro-seen', '1');
+    render(<App />);
+    expect(index()).toHaveAttribute('inert');
+
+    await waitFor(() => expect(index()).not.toHaveAttribute('inert'), { timeout: 2000 });
+    expect(screen.queryByText('Initializing...')).not.toBeInTheDocument();
+  });
+
+  it('starts open with no boot when reduced motion is requested', () => {
+    const matchMedia = window.matchMedia;
+    window.matchMedia = (query) =>
+      ({ ...matchMedia(query), matches: query.includes('reduce') || query.includes('min-width') });
+    try {
+      render(<App />);
+      expect(index()).not.toHaveAttribute('inert');
+      expect(screen.queryByText('Pokédex starting up')).not.toBeInTheDocument();
+    } finally {
+      window.matchMedia = matchMedia;
+    }
+  });
+
+  it('can be closed by hand, and then stays closed until opened', async () => {
     renderOpen();
-    const index = screen.getByRole('region', { name: 'Pokémon index' });
-    expect(index).not.toHaveAttribute('inert');
+    expect(index()).not.toHaveAttribute('inert');
 
     await userEvent.click(screen.getByRole('button', { name: 'Close Pokédex' }));
-    expect(index).toHaveAttribute('inert');
+    expect(index()).toHaveAttribute('inert');
+    expect(within(cover()).getByText('Standby')).toBeInTheDocument();
+
+    await userEvent.click(cover());
+    expect(index()).not.toHaveAttribute('inert');
+  });
+
+  it('drives the list and the dex from the directional pad', async () => {
+    renderOpen();
+    await list();
+    const pad = within(screen.getByRole('group', { name: 'Directional pad' }));
+
+    // Nothing selected yet: down starts at the top of the list.
+    await userEvent.click(pad.getByRole('button', { name: /D-pad down/ }));
+    expect(window.location.hash).toBe('#/pokemon/1');
+    await userEvent.click(pad.getByRole('button', { name: /D-pad down/ }));
+    expect(window.location.hash).toBe('#/pokemon/2');
+    await userEvent.click(pad.getByRole('button', { name: /D-pad up/ }));
+    expect(window.location.hash).toBe('#/pokemon/1');
+
+    // Left and right step through the dex, wrapping like the arrow keys.
+    await userEvent.click(pad.getByRole('button', { name: /D-pad left/ }));
+    expect(window.location.hash).toBe('#/pokemon/151');
+    await userEvent.click(pad.getByRole('button', { name: /D-pad right/ }));
+    expect(window.location.hash).toBe('#/pokemon/1');
   });
 
   it('keeps sound effects off until switched on, and remembers the choice', async () => {

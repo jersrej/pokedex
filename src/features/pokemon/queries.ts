@@ -48,10 +48,14 @@ export const useTypeMembers = (type: PokemonTypeName | null) =>
 
 /**
  * Reads a Pokémon from the cache without ever triggering a request. List rows
- * use it to show types for entries that have already been scanned.
+ * use it to show types for entries that have already been scanned, and the
+ * device's action keys to act on the entry on screen.
  */
 export const useCachedPokemon = (id: number) =>
   useQuery({ ...pokemonOptions(id), enabled: false }).data;
+
+export const useCachedSpecies = (id: number) =>
+  useQuery({ ...speciesOptions(id), enabled: false }).data;
 
 /** Warm the cache for an entry the user is about to open. */
 export function usePrefetchPokemon() {

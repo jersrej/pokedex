@@ -7,7 +7,7 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-/** Square 44px button moulded into the device shell. */
+/** Square 44px key raised from the device shell. */
 export function IconButton({ label, className, children, ...props }: IconButtonProps) {
   return (
     <button
@@ -15,7 +15,7 @@ export function IconButton({ label, className, children, ...props }: IconButtonP
       aria-label={label}
       title={label}
       className={cn(
-        'grid size-11 shrink-0 place-items-center rounded-md text-body-ink transition-colors duration-150 hover:bg-body-dark/60 focus-visible:outline-body-ink aria-pressed:bg-body-dark',
+        'hw-key grid size-11 shrink-0 place-items-center rounded-md',
         className,
       )}
       {...props}

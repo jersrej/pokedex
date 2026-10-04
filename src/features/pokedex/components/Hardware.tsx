@@ -4,46 +4,56 @@ import { useDeviceStatus } from '../hooks/useDeviceStatus';
 
 /** The Pokédex's signature camera lens. Decorative. */
 export function Lens({ className }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        'relative block shrink-0 rounded-full border-4 border-body-ink bg-lens shadow-inner',
-        className,
-      )}
-    >
-      <span className="absolute top-[18%] left-[18%] size-1/4 rounded-full bg-white/60" />
-    </span>
-  );
+  return <span aria-hidden="true" className={cn('lens block shrink-0 rounded-full', className)} />;
 }
 
-const led = 'size-2.5 rounded-full border border-black/25';
-
 /**
- * Three indicator LEDs. They mirror the text readout (see StatusReadout),
- * which is what assistive tech reads, so these are hidden from it.
- *   red: offline or the index failed · amber: a request is in flight · green: ready
+ * Three indicator LEDs in their housings. They mirror the text readout (see
+ * StatusReadout), which is what assistive tech reads, so these are hidden
+ * from it. Every state is real:
+ *   red    power, as on a handheld of the era; blinks on a fault
+ *          (offline, or the index failed)
+ *   amber  link: the Pokédex database is loaded
+ *   green  activity: blinks while a request is in flight
  */
-export function Leds() {
-  const { online, syncing, failed } = useDeviceStatus();
+export function Leds({ powered = true }: { powered?: boolean }) {
+  const { online, syncing, failed, entryCount } = useDeviceStatus();
   const fault = !online || failed;
 
   return (
     <span aria-hidden="true" className="flex gap-1.5">
-      <span className={cn(led, 'bg-led-red', !fault && 'opacity-30')} />
-      <span className={cn(led, 'bg-led-amber', syncing ? 'animate-blink' : 'opacity-30')} />
-      <span className={cn(led, 'bg-led-green', fault && 'opacity-30')} />
+      <span className={cn('led led-red', powered && fault && 'animate-blink')} data-lit={powered} />
+      <span className="led led-amber" data-lit={powered && !fault && entryCount !== null} />
+      <span
+        className={cn('led led-green', powered && syncing && 'animate-blink')}
+        data-lit={powered && syncing}
+      />
     </span>
   );
 }
 
-/** Speaker grille on the right half. Decorative. */
-export function Vents() {
+/** Speaker grille: a few slots cut into the shell. Decorative. */
+export function Vents({ className }: { className?: string }) {
   return (
-    <span aria-hidden="true" className="flex gap-1">
-      {[0, 1, 2, 3].map((slot) => (
-        <span key={slot} className="h-4 w-1 rounded-full bg-body-dark" />
+    <span aria-hidden="true" className={cn('flex flex-col gap-1', className)}>
+      {[0, 1, 2].map((slot) => (
+        <span
+          key={slot}
+          className="h-1 w-10 rounded-full bg-body-outline shadow-[0_1px_0_rgb(255_255_255/0.2)]"
+        />
       ))}
+    </span>
+  );
+}
+
+/** Lettering moulded into the plastic. Decorative. */
+export function Engraving({ children }: { children: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="font-display text-2xs text-body-dark uppercase [text-shadow:0_1px_0_rgb(255_255_255/0.22)]"
+    >
+      {children}
     </span>
   );
 }

@@ -3,7 +3,8 @@
 /* ------------------------------------------------------------------ */
 /* Design tokens                                                       */
 /*                                                                     */
-/* Two materials: red moulded plastic, and a four-shade olive LCD.     */
+/* Two materials: red moulded plastic with dark outlines, and a        */
+/* four-shade olive LCD.                                               */
 /* Everything on a screen is drawn in the LCD shades only.             */
 /* ------------------------------------------------------------------ */
 
@@ -14,8 +15,13 @@
   --pokedex-body: #b4323a;
   --pokedex-body-light: #cd5a5f;
   --pokedex-body-dark: #7e1f28;
+  --pokedex-body-outline: #2b0b10;
   --pokedex-body-ink: #f4edd4;
   --pokedex-bezel: #30362f;
+  /* The dark rubber of the D-pad and action keys. */
+  --pokedex-key: #2c302d;
+  --pokedex-key-outline: #0c0e0d;
+  --pokedex-key-ink: #d5d9cf;
 
   /* LCD, lightest to darkest */
   --pokedex-screen: #b9c9a0;
@@ -68,6 +74,7 @@
   --color-body: var(--pokedex-body);
   --color-body-light: var(--pokedex-body-light);
   --color-body-dark: var(--pokedex-body-dark);
+  --color-body-outline: var(--pokedex-body-outline);
   --color-body-ink: var(--pokedex-body-ink);
   --color-bezel: var(--pokedex-bezel);
   --color-screen: var(--pokedex-screen);
@@ -88,11 +95,6 @@
   /* Display sizes that keep the 8px pixel font legible. */
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 1.6;
-
-  --color-lens: #4a8fa1;
-  --color-led-red: #dc5a52;
-  --color-led-amber: #e0b84c;
-  --color-led-green: #62a86b;
 
   /* A hinge: eases off the stop, settles without overshoot. */
   --ease-fold: cubic-bezier(0.45, 0, 0.2, 1);
@@ -303,6 +305,11 @@
     .device[data-animating='true'] .device-half-right {
       transition: transform var(--fold-duration) var(--ease-fold);
     }
+    /* Open and at rest, the slab needs no depth. Left in 3D, the cover on
+       its far side takes the entry screen's wheel scrolling. */
+    .device[data-open='true'][data-animating='false'] .device-half-right {
+      transform-style: flat;
+    }
 
     /* The cover casts a shadow on the left screen while it is over it. */
     .device-half-left::after {
@@ -327,15 +334,257 @@
   }
 
   /* ---------------------------------------------------------------- */
+  /* Hardware                                                          */
+  /*                                                                   */
+  /* Depth comes from three things only: a dark outline, a highlight   */
+  /* on the edge facing the light, and a hard shadow on the other.     */
+  /* ---------------------------------------------------------------- */
+
+  /* Moulded plastic: light catches the top edge, a bevel runs along the
+     bottom, and the face between them stays close to flat. */
+  .shell {
+    border: 2px solid var(--pokedex-body-outline);
+    background-color: var(--pokedex-body);
+    background-image: linear-gradient(
+      170deg,
+      rgb(255 255 255 / 0.1),
+      transparent 30%,
+      transparent 75%,
+      rgb(0 0 0 / 0.12)
+    );
+    box-shadow:
+      inset 0 2px 0 rgb(255 255 255 / 0.22),
+      inset 0 -5px 0 rgb(0 0 0 / 0.2);
+    color: var(--pokedex-body-ink);
+  }
+  @media (width >= 48rem) {
+    /* On a desk: each half also drops a shadow beneath itself. */
+    .shell {
+      box-shadow:
+        inset 0 2px 0 rgb(255 255 255 / 0.22),
+        inset 0 -5px 0 rgb(0 0 0 / 0.2),
+        0 22px 30px -18px rgb(0 0 0 / 0.55);
+    }
+  }
+
+  /* The pin the halves turn on, seen side-on: knuckles lit down their length. */
+  .hinge {
+    position: absolute;
+    inset-block: 1.25rem;
+    left: 50%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 1.25rem;
+    transform: translateX(-50%);
+  }
+  .hinge > span {
+    border: 2px solid var(--pokedex-body-outline);
+    border-radius: 0.375rem;
+    background-image: linear-gradient(
+      90deg,
+      var(--pokedex-body-dark),
+      var(--pokedex-body-light) 35%,
+      var(--pokedex-body) 60%,
+      var(--pokedex-body-dark)
+    );
+    box-shadow: 0 2px 3px rgb(0 0 0 / 0.35);
+  }
+
+  /* The recess a screen sits in: shadowed at the top, a lit lip below. */
+  .bezel {
+    border: 2px solid var(--pokedex-body-outline);
+    background-color: var(--pokedex-bezel);
+    background-image: linear-gradient(rgb(255 255 255 / 0.06), transparent 40%);
+    box-shadow:
+      inset 0 3px 6px rgb(0 0 0 / 0.55),
+      0 1px 0 rgb(255 255 255 / 0.25);
+  }
+
+  .lens {
+    border: 4px solid var(--pokedex-body-ink);
+    background-image: radial-gradient(circle at 35% 30%, #a9d9e4 0 12%, #4a8fa1 42%, #1f4a57);
+    box-shadow:
+      0 0 0 2px var(--pokedex-body-outline),
+      inset 0 -3px 6px rgb(0 0 0 / 0.35);
+  }
+
+  /* An LED in its housing. Unlit, the dome still shows its colour. */
+  .led {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--pokedex-body-outline);
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--led) 35%, #161616);
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.5);
+  }
+  .led[data-lit='true'] {
+    background-color: var(--led);
+    background-image: radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.7), transparent 45%);
+    box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led) 70%, transparent);
+  }
+  .led-red {
+    --led: #e2564d;
+  }
+  .led-amber {
+    --led: #e6bd4a;
+  }
+  .led-green {
+    --led: #63b76e;
+  }
+
+  /* A key raised from the shell. Pressing it takes up its own shadow. */
+  .hw-key {
+    border: 2px solid var(--pokedex-body-outline);
+    background-color: var(--pokedex-body);
+    color: var(--pokedex-body-ink);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      0 3px 0 var(--pokedex-body-outline);
+    transition:
+      transform 60ms linear,
+      box-shadow 60ms linear,
+      background-color 150ms linear;
+  }
+  .hw-key:hover,
+  .group:hover .hw-key {
+    background-color: color-mix(in srgb, var(--pokedex-body) 82%, #000);
+  }
+  .hw-key:active,
+  .group:active .hw-key,
+  .hw-key[aria-pressed='true'] {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 3px rgb(0 0 0 / 0.35),
+      0 1px 0 var(--pokedex-body-outline);
+  }
+  .hw-key[aria-pressed='true'] {
+    background-color: var(--pokedex-body-dark);
+  }
+  /* The selected key of a set: filled, as well as held down. */
+  .hw-key.hw-key-lit {
+    background-color: var(--pokedex-body-ink);
+    color: var(--pokedex-body-outline);
+  }
+  .hw-key:focus-visible {
+    outline-color: var(--pokedex-body-ink);
+  }
+
+  /* Directional pad: a dark cross in a round well. */
+  .dpad {
+    --cell: 2rem;
+    display: grid;
+    grid-template: repeat(3, var(--cell)) / repeat(3, var(--cell));
+    padding: 0.375rem;
+    border-radius: 50%;
+    background-color: var(--pokedex-body-dark);
+    box-shadow:
+      inset 0 2px 4px rgb(0 0 0 / 0.45),
+      0 1px 0 rgb(255 255 255 / 0.2);
+  }
+  @media (width >= 48rem) {
+    .dpad {
+      --cell: 2.25rem;
+    }
+  }
+  .dpad-key,
+  .dpad-hub {
+    background-color: var(--pokedex-key);
+  }
+  .dpad-key {
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--pokedex-key-outline);
+    color: var(--pokedex-key-ink);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  }
+  .dpad-key:hover {
+    background-color: color-mix(in srgb, var(--pokedex-key) 88%, #fff);
+  }
+  .dpad-key:active {
+    background-color: color-mix(in srgb, var(--pokedex-key) 70%, #000);
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.6);
+  }
+  .dpad-key:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline-color: var(--pokedex-body-ink);
+  }
+  /* The dimple a thumb rests in. */
+  .dpad-hub {
+    background-image: radial-gradient(circle, rgb(0 0 0 / 0.45) 30%, transparent 34%);
+  }
+
+  /* Action keys (Cry, Register): the Select and Start of this device.
+     Capsules in the D-pad's rubber, a matched pair, labelled on the key. */
+  .action-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 9.5rem;
+    height: 2.5rem;
+    border: 2px solid var(--pokedex-key-outline);
+    border-radius: 9999px;
+    background-color: var(--pokedex-key);
+    color: var(--pokedex-key-ink);
+    font-family: var(--font-display);
+    font-size: var(--text-2xs);
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.2),
+      0 3px 0 var(--pokedex-key-outline),
+      0 4px 0 rgb(255 255 255 / 0.14);
+    transition:
+      transform 60ms linear,
+      box-shadow 60ms linear;
+  }
+  .action-key:hover:enabled {
+    background-color: color-mix(in srgb, var(--pokedex-key) 88%, #fff);
+  }
+  /* Down: the key sinks into its own shadow, and stays there while "on". */
+  .action-key:active:enabled,
+  .action-key[aria-pressed='true'] {
+    transform: translateY(2px);
+    background-color: color-mix(in srgb, var(--pokedex-key) 70%, #000);
+    color: #fff;
+    box-shadow:
+      inset 0 2px 4px rgb(0 0 0 / 0.6),
+      0 1px 0 var(--pokedex-key-outline),
+      0 2px 0 rgb(255 255 255 / 0.14);
+  }
+  .action-key:disabled {
+    color: color-mix(in srgb, var(--pokedex-key-ink) 45%, var(--pokedex-key));
+  }
+  .action-key:focus-visible {
+    outline-color: var(--pokedex-body-ink);
+    outline-offset: 3px;
+  }
+
+  /* ---------------------------------------------------------------- */
   /* LCD                                                               */
   /* ---------------------------------------------------------------- */
 
-  /* The panel: a dot-matrix grid, light falling from the top left, and
-     the shadow of the bezel around the edge. All of it sits above the
-     content and ignores the pointer. Deliberately faint. */
+  /* The panel: a dot-matrix grid, light falling from the top left, one
+     soft reflection across the corner, and the shadow of the bezel around
+     the edge. All of it sits above the content and ignores the pointer.
+     Deliberately faint. */
   .lcd {
     position: relative;
+    /* Keeps the overlay's z-index inside the panel, under a closed cover. */
+    isolation: isolate;
     background-color: var(--pokedex-screen);
+    /* The frame the panel is seated in. */
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5);
+  }
+  /* Unpowered: the panel is dark until the backlight comes up. */
+  .lcd[data-power] {
+    transition: background-color 200ms linear;
+  }
+  .lcd[data-power='off'] {
+    background-color: var(--pokedex-screen-dark);
   }
   .lcd::after {
     content: '';
@@ -347,10 +596,12 @@
     background-image:
       linear-gradient(rgb(21 36 26 / 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgb(21 36 26 / 0.05) 1px, transparent 1px),
+      linear-gradient(118deg, rgb(255 255 255 / 0.06) 22%, transparent 22.5%),
       radial-gradient(120% 80% at 25% 0%, rgb(255 255 255 / 0.12), transparent 60%);
     background-size:
       3px 3px,
       3px 3px,
+      100% 100%,
       100% 100%;
     box-shadow:
       inset 0 2px 5px rgb(21 36 26 / 0.35),
